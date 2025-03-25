@@ -1,0 +1,90 @@
+Base doc to follow along - https://www.linode.com/docs/guides/vsftpd-on-ubuntu-2004-installation-and-configuration/
+
+Setup FTP on Ubuntu:
+
+; Update Libraries
+$ sudo apt update
+
+; Install ftp and vsftpd packages and check if ufw is installed 
+$ sudo apt install vsftpd ftp ufw
+
+; Check if Service is running
+$ sudo systemctl status vsftpd
+
+; If not running enable it and then start it
+$ sudo systemctl enable vsftpd
+
+$ sudo systemctl start vsftpd
+
+; Create FTP User with Home Directory and Default Shell:
+$ sudo useradd ftpuser -m -s /bin/bash
+
+; Give the user sudo permission and verify 
+$ sudo usermod -aG sudo ftpuser
+
+$ groups ftpuser
+
+; Set User's password 
+$ sudo passwd ftpuser
+
+; Check Local FTP Connection
+$ ftp localhost
+
+ftpuser
+331 Please specify the password.
+Password: 
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp> ls
+
+; For external FTP Connection
+; Create a Backup file of the configuration file in /etc directory
+; Config file is /etc/vsftpd.conf 
+Ubuntu-VM:/etc$ sudo cp vsftpd.conf vsftpd.conf.backup
+
+; Allow FTP Write command
+# Uncomment this line to enable any form of FTP write command.
+write_enable=YES
+
+; After making any configuration changes run 
+$ sudo systemctl restart vsftpd
+
+; Run To see if vsftpd started recently
+$ sudo systemctl status vsftpd
+
+Active: active (running) since Mon 2024-09-16 19:39:40 EDT; 8s ago
+
+; Allow external connections
+$ sudo ufw allow ssh
+Skipping adding existing rule
+
+$ sudo ufw allow from any to any port 20,21 proto tcp
+Rules updated
+Rules updated (v6)
+
+$ sudo ufw enable
+Firewall is active and enabled on system startup
+
+ftp commands:
+ftp IP-Address : Connect to FTP Server
+Eg. ftp 192.168.1.100
+
+? : To get a List of Options available
+
+ls : To List files on FTP Server
+
+Put Filename: To add files onto the FTP Server
+Eg. put MyFile.txt
+
+Get Filename: To grab files from the FTP Server
+Eg. get MyFile.txt
+
+Quit : To exit the FTP shell
+quit
+
+Remove FTP and vsftpd from the Server alongwith config files:
+$ sudo apt remove --purge vsftpd ftp
+
+Cleaning up unnecessary packages:
+sudo apt autoremove -y && sudo apt autoclean -y

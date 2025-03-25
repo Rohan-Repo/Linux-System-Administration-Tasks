@@ -1,0 +1,189 @@
+Linux Special Permissions - Sticky bit || SetUID || SetGID :
+
+chmod - Set basic RWX permissions
+
+Linux Special Permissions - Help safeguard the Directory Content or to change Group ownership for specific directories and files within it
+
+Become root user with sudo su -
+
+Let's create one group sysAdmins which is owner and has RWX permissions on a common directory /adminFiles 
+
+mkdir adminFiles
+
+groupadd sysAdmins
+
+chgrp sysAdmins adminFiles
+
+chmod g+w adminFiles
+
+Ensure that user's have access to the /root so they can naviagte to the folder 
+ls -ld /root
+
+chmod o+x /root
+
+ls -ld /root
+
+Create two users with BASH shell and add them to that group by default with -G
+useradd johnDoe -m -s /bin/bash -G sysAdmins
+useradd janeDoe -m -s /bin/bash -G sysAdmins
+
+Set their passwords:
+passwd johnDoe
+passwd janeDoe
+
+Check if they are a part of Group by cat /etc/group
+
+Since everybody in the sysAdmins group has RWX permission they can create or delete files in that directory so one user can intentionally or unintentionally delete the other user's files 
+
+Sticky Bit helps in this usecase - Nobody else can delete the content of the directory except the file owner 
+
+su - johnDoe
+
+John creates their personal file in the common folder
+cd /root/adminFiles
+touch johnDoe.txt
+
+Now Jane logs in and unintentionally deletes the file :
+su - janeDoe
+cd /root/adminFiles
+rm -rf johnDoe.txt
+
+To prevent this from happening, that the System Administrator (Root) User sets the Sticky Bit
+root@NPower-Ubuntu-VM:~# ls -ld adminFiles/
+drwxrwxr-x 2 root sysAdmins 4096 Jan  9 10:57 adminFiles/
+
+Set the Sticky Bit with 1 at the start :
+
+root@NPower-Ubuntu-VM:~# chmod 1775 adminFiles/
+
+t indicates Sticky Bit 
+root@NPower-Ubuntu-VM:~# ls -ld adminFiles/
+drwxrwxr-t 2 root sysAdmins 4096 Jan  9 10:57 adminFiles/
+
+Now even if the other user tries to delet other's files it won't be allowed
+rm: remove write-protected regular empty file 'jane.txt'? y
+rm: cannot remove 'jane.txt': Operation not permitted
+
+So even if the Group has RWX permission one user from the same group cannot delete other user's directory, only the owner can delete it
+
+janeDoe@NPower-Ubuntu-VM:/root/adminFiles$ rm -rf jane.txt 
+
+-----------------------------------xxxxxxxx------------------------
+SetGID - Used to ensure that the Group's ownership will be inherited to all the content of the directory
+
+Let's Suppose all the User's have created a File in the common folder:
+
+root@NPower-Ubuntu-VM:~/adminFiles# ls -l
+total 0
+-rw-rw-r-- 1 janeDoe janeDoe 0 Jan  9 11:47 jane1.txt
+-rw-rw-r-- 1 johnDoe johnDoe 0 Jan  9 11:47 john1.txt
+-rw-r--r-- 1 root    root    0 Jan  9 11:49 root1.txt
+
+root@NPower-Ubuntu-VM:~# ls -ld adminFiles/
+drwxrwxr-t 2 root sysAdmins 4096 Jan  9 11:49 adminFiles/
+
+But we see in-spite of it being created in the common folder, it has the User's group and not the folder's group which is sysAdmins. 
+
+We have different owners for files in the same directory. So to ensure that happens we use the SetGID functionality, so any files created under that folder would get the directory's group by default.
+
+Every file created under that directory should have the same group owner as the directory so we use SetGID.
+
+root@NPower-Ubuntu-VM:~# ls -ld adminFiles/
+drwxrwxr-t 2 root sysAdmins 4096 Jan  9 11:49 adminFiles/
+
+root@NPower-Ubuntu-VM:~# chmod g+s adminFiles/
+
+s on group means that the SetGID bit is set and shown in blue to differenciate:
+root@NPower-Ubuntu-VM:~# ls -ld adminFiles/
+drwxrwsr-t 2 root sysAdmins 4096 Jan  9 11:49 adminFiles/
+
+So any new file created in that folder would get the directory group (sysAdmins) by default:
+janeDoe@NPower-Ubuntu-VM:/root/adminFiles$ ls -l
+total 0
+-rw-rw-r-- 1 janeDoe janeDoe   0 Jan  9 11:47 jane1.txt
+-rw-rw-r-- 1 janeDoe sysAdmins 0 Jan  9 12:02 jane2.txt
+-rw-rw-r-- 1 johnDoe johnDoe   0 Jan  9 11:47 john1.txt
+-rw-rw-r-- 1 johnDoe sysAdmins 0 Jan  9 12:02 john2.txt
+-rw-r--r-- 1 root    root      0 Jan  9 11:49 root1.txt
+-rw-r--r-- 1 root    sysAdmins 0 Jan  9 12:02 root2.txt
+
+-----------------------------------xxxxxxxx------------------------
+SetUID - Command will be run with the Owner rights instead of the right of the executor.
+No matter who runs the command it will be run as if it's run by the owner of the file.
+
+Here other users cannot access Root's /root directory except Root. 
+
+root@NPower-Ubuntu-VM:~# ls -l /root/
+total 8
+drwxrwsr-t 2 root sysAdmins 4096 Jan  9 12:02 adminFiles
+drwx------ 6 root root      4096 May 31  2024 snap
+root@NPower-Ubuntu-VM:~# su - johnDoe
+
+johnDoe@NPower-Ubuntu-VM:~$ ls -l /root/
+ls: cannot open directory '/root/': Permission denied
+
+johnDoe@NPower-Ubuntu-VM:~$ su - janeDoe
+Password: 
+janeDoe@NPower-Ubuntu-VM:~$ ls -l /root/
+ls: cannot open directory '/root/': Permission denied
+
+As ls is run as a normal user you can't view the content but only as a Root user
+
+root@NPower-Ubuntu-VM:~# ls -l /usr/bin/ls
+-rwxr-xr-x 1 root root 142312 Apr  5  2024 /usr/bin/ls
+
+Set the SetUID bit using u+s:
+root@NPower-Ubuntu-VM:~# chmod u+s /usr/bin/ls
+
+s on User means that the SetUID bit is set and shown in Red to differenciate:
+root@NPower-Ubuntu-VM:~# ls -l /usr/bin/ls
+-rwsr-xr-x 1 root root 142312 Apr  5  2024 /usr/bin/ls
+
+So now /root contents would be visible from all other users
+
+root@NPower-Ubuntu-VM:~# su - janeDoe
+
+janeDoe@NPower-Ubuntu-VM:~$ ls -l /root
+total 8
+drwxrwsr-t 2 root sysAdmins 4096 Jan  9 12:02 adminFiles
+drwx------ 6 root root      4096 May 31  2024 snap
+
+janeDoe@NPower-Ubuntu-VM:~$ su - johnDoe
+Password: 
+
+johnDoe@NPower-Ubuntu-VM:~$ ls -l /root/
+total 8
+drwxrwsr-t 2 root sysAdmins 4096 Jan  9 12:02 adminFiles
+drwx------ 6 root root      4096 May 31  2024 snap
+johnDoe@NPower-Ubuntu-VM:~$ 
+
+So here the command ls is now run with Root rights and not with User rights
+
+Extra:
+To re-confirm let's also check for sudo command:
+root@NPower-Ubuntu-VM:~# ls -l /usr/bin/sudo
+-rwsr-xr-x 1 root root 277936 Apr  8  2024 /usr/bin/sudo
+-----------------------------------xxxxxxxx------------------------
+Numeric Mode :
+Sticky Bit = 1 || SetGID = 2 || SetUID = 4
+For eg. 
+	chmod 1775 /root/adminFiles [Set Sticky Bit]
+	chmod 3775 /root/adminFiles [Set Sticky Bit + SetGID]
+	chmod 7775 /root/adminFiles [Set Sticky Bit + SetGID + SetUID]
+-----------------------------------xxxxxxxx------------------------
+Delete and Clean-up:
+
+1. Remove Group sysAdmins:
+sudo groupdel sysAdmins
+
+2. Remove Folder adminFiles:
+sudo rm -rf /root/adminFiles
+
+3. Check ls command Sticky Bit:
+ls -l /usr/bin/ls 		Should be In Green:
+-rwxr-xr-x 1 root root 142312 Apr  5  2024 /usr/bin/ls
+AND Not In Red:
+-rwsr-xr-x 1 root root 142312 Apr  5  2024 /usr/bin/ls
+
+Otherwise Remove Sticky Bit:
+chmod u-s /usr/bin/ls
