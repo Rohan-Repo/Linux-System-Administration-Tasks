@@ -1,0 +1,45 @@
+Add User without a Home Directory
+sudo useradd johnDoe
+
+Add User with a Home Directory
+sudo useradd -m janeDoe
+
+Create user with Home Directory, Default Shell
+sudo useradd chandler_bing -m -s /bin/bash
+
+Create user with Home Directory, Default Shell and by default sudo privileges
+
+sudo useradd testUser -m -s /bin/bash -G sudo
+
+Delete User alongwith their Home Directory:
+sudo userdel -r janeDoe
+sudo userdel -r johnDoe
+
+LongForm way:
+npoweradmin@NPower-Ubuntu-VM:~/JITA2025$ sudo adduser chandler_bing
+info: Adding user `chandler_bing' ...
+info: Selecting UID/GID from range 1000 to 59999 ...
+info: Adding new group `chandler_bing' (1003) ...
+info: Adding new user `chandler_bing' (1003) with group `chandler_bing (1003)' ...
+info: Creating home directory `/home/chandler_bing' ...
+info: Copying files from `/etc/skel' ...
+New password: 
+BAD PASSWORD: The password is shorter than 8 characters
+Retype new password: 
+passwd: password updated successfully
+Changing the user information for chandler_bing
+Enter the new value, or press ENTER for the default
+	Full Name []: Chandler Muriel Bing
+	Room Number []: 19
+	Work Phone []: +1-123-456-7890
+	Home Phone []: +1-987-654-3210
+	Other []: 
+Is the information correct? [Y/n] y
+info: Adding new user `chandler_bing' to supplemental / extra groups `users' ...
+info: Adding user `chandler_bing' to group `users' ...
+
+npoweradmin@NPower-Ubuntu-VM:~/JITA2025$ sudo deluser --remove-home chandler_bing
+info: Looking for files to backup/remove ...
+info: Removing files ...
+info: Removing crontab ...
+info: Removing user `chandler_bing' ...

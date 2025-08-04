@@ -1,0 +1,22 @@
+Download words.txt from Englih words GitHub
+
+Windows:
+Compress-Archive -Path '.\words (2).txt' words.zip
+
+Linux Compress & Expand:
+
+; gzip Compress and Expand
+gzip -9 fileToZip
+gzip -d fileToZip.gz 
+   
+; tar Compress & Expand
+tar -czvf zipFile.tgz fileToZip
+tar -xzvf zipFile.tgz
+
+; lrzip best Compression keeps original
+sudo apt-get install lrzip
+lrzip -z fileToZip
+lrunzip words.txt.lrz
+   
+; sort & human-readable
+ls -laSh

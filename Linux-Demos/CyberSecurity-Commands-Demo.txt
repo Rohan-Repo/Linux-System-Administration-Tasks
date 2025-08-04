@@ -1,0 +1,48 @@
+Check out manual pages for all required commands:
+
+A) tcpDump : Capture N/W Packets
+
+1) Get all available N/W Options:
+$ sudo tcpdump -D
+
+2) Capture Ping Packets going through:
+$ sudo tcpdump -i any icmp -v
+
+3) Check Ping and limit to 10 packets:
+$ sudo tcpdump -i any -c10 icmp -v
+
+B) arp : Capture IP Address & Mac Address Information for devices in the Network
+$ arp
+Command 'arp' not found, but can be installed with:
+sudo apt install net-tools
+
+[Automatically Say yes]
+$ sudo apt update
+$ sudo apt install net-tools -y 
+
+1) $ arp
+
+C) nmap - Gather much more information about the N/W: 
+$ sudo apt update
+$ sudo apt install nmap -y
+
+Check version:
+$ nmap -v
+
+Detect Host's OS, Open Port, MAC Address Information [-O]:
+
+Since same N/W so N/W distance = 1 hops
+Windows VM: sudo nmap -O 192.168.2.37
+
+Since same machine so N/W distance = 0 hops
+Linux VM: sudo nmap -O 192.168.2.38
+
+Extra:
+Get More information like Services Running [-A]:
+Windows VM : nmap -A 192.168.2.37
+
+(-sT) TCP Scan 
+(-p) Ports to Scan HTTP,HTTPS 
+(ipAddress/CIDR) target_IP_Range[Scan IP and it's entire subnet from 192.168.2.1 to 192.168.2.255]
+
+$ sudo nmap -sT -p 80,443 192.168.2.1/24

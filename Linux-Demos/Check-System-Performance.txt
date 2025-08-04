@@ -1,0 +1,30 @@
+Linux check System Performance :
+$ sudo top
+
+$ sudo apt update
+
+$ sudo apt install htop
+$ sudo htop
+
+$ sudo apt install btop
+$ sudo btop
+
+Windows :
+Resource Monitor
+Performance Monitor
+
+Or btop For Windows:
+https://github.com/aristocratos/btop4win
+
+Download Link : https://github.com/aristocratos/btop4win/releases/latest
+Extract and Run btop4win.exe as an Administrator
+
+Get How Long the System has been up [Windows-LOGON TIME]:
+Windows: 
+PS C:\Users\Administrator> query user
+ USERNAME              SESSIONNAME        ID  STATE   IDLE TIME  LOGON TIME
+>administrator         console             1  Active      none   2/19/2025 9:52 AM
+
+Linux:
+
+$ uptime

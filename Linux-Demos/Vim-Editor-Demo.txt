@@ -1,0 +1,30 @@
+Install VIM:
+$ sudo apt update
+$ sudo apt install vim-nox
+$ which vim
+
+ESC + for all options:
+i - Insert Data
+
+yy - Copy
+p - Paste
+
+dd - Delete Line
+
+Save & Close Related:
+:w - Save the current File
+:q - Quit 
+:q! - Quit Forcibly
+:wq - Save & Quit
+:wq! - Save & Quit Forcibly
+
+Save-As Type functionality:
+:w newFileName
+:w SampleFile.txt
+
+/searchString - Find Pattern in your file
+/hello
+/\n -> Search NewLine Character
+
+Show Line Numbers :
+:set nu 

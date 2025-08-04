@@ -1,0 +1,22 @@
+If you want to change selective permission for Users, Group or Others use the + way
+
+If you are okay with changing all permissions then use the Numeric way
+
+Change Permission for all User, Group and Others 
+chmod +x getUserInfo.sh 
+
+Change Permission for all User and Group 
+chmod ug+wx getUserInfo.sh 
+
+Set permission for users with numeric:
+Set Read Permission for all Users 
+chmod 444 getUserInfo.sh 
+
+Set RWX (7) for User, Read & Write (6) for Group & Just Read (4) for Others
+chmod 764 Sample2.txt 
+
+Set RW (6) for User, Read (4) for Group & nothing for Others (0)
+chmod 640 1.txt
+
+Add Singular Read permission to Group but don't change for others :
+chmod g+r 1.txt
