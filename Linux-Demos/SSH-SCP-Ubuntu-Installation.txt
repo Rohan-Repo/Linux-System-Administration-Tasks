@@ -51,7 +51,7 @@ Remove the Host: (-R)
 PS C:\Users\AdminUser> ssh-keygen -R 192.168.2.37
 
 View Contents:
-PS C:\Users\RohanDeshpande> cat .\.ssh\known_hosts
+PS C:\Users\AdminUser> cat .\.ssh\known_hosts
 
 Remove SSH Server Ubuntu:
 $ sudo systemctl status ssh
